@@ -16,6 +16,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
+import static android.app.Notification.EXTRA_NOTIFICATION_ID;
+import static android.app.Notification.VISIBILITY_PUBLIC;
+
 public class LoginActivity extends AppCompatActivity {
     private TextInputEditText mUserName;
     private TextInputEditText mPassword;
@@ -62,15 +65,10 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString("password", mPassword.getText().toString());
             editor.apply();
             //setting up special activity which is not a part of regular UX flow
-      /*      Intent intent = new Intent(this, NotificationActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);*/
-      //this code is for accesing regular class from notification
-            Intent intent=new Intent(this,ToDoList.class);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-            stackBuilder.addNextIntentWithParentStack(intent);
-            PendingIntent pendingIntent =
-                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            //PendingIntent pendingIntent =goToNewActivity();
+            //this code is for accesing regular class from notification
+            //PendingIntent pendingIntent=goToregularActivity();
+            PendingIntent pendingIntent=addButtonNotification();
             createNotificationChannel();
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setSmallIcon(android.R.drawable.btn_star_big_on)
@@ -78,7 +76,10 @@ public class LoginActivity extends AppCompatActivity {
                     .setContentText("Login Is Successful")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
+                    .setAutoCancel(true)
+                    .setVisibility(VISIBILITY_PUBLIC)
+                    .addAction(android.R.drawable.btn_plus, "snoo",
+                    pendingIntent);
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             // notificationId is a unique int for each notification that you must define
             notificationManager.notify(notificationId, mBuilder.build());
@@ -108,5 +109,32 @@ public class LoginActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+    public PendingIntent goToNewActivity(){
+        Intent intent = new Intent(this, NotificationActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        return pendingIntent;
+    }
+
+    public PendingIntent goToregularActivity(){
+        Intent intent=new Intent(this,ToDoList.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(intent);
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
+    }
+
+    public PendingIntent addButtonNotification(){
+        Intent intent = new Intent(this, NotificationActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        String ACTION_BUTTON="doSomething";
+        intent.setAction(ACTION_BUTTON);
+        intent.putExtra(EXTRA_NOTIFICATION_ID, 0);
+        PendingIntent snoozePendingIntent =
+                PendingIntent.getBroadcast(this, 0, intent, 0);
+        return snoozePendingIntent;
+
     }
 }

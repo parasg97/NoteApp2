@@ -18,8 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ToDoList" />
-        <activity android:name=".DetailNote"></activity>
+        <activity
+            android:name=".ToDoList"
+            android:parentActivityName=".LoginActivity" />
+        <activity android:name=".DetailNote" />
+        <activity android:name=".NotificationActivity"></activity>
     </application>
 
 </manifest>
